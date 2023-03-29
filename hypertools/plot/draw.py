@@ -331,13 +331,14 @@ def _draw(x, legend=None, title=None, labels=False,
             return animate_plot3D(x, **ani_params)
 
     def animate_plot3D(x, tail_duration=2, rotations=2, zoom=1, chemtrails=False,
-                       frame_rate=50, elev=10, style='parallel'):
+                       frame_rate=50, elev=10, style='spin'):
 
         # initialize plot
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
         # create lines
+        trail = None
         if fmt is not None:
             lines = [ax.plot(dat[0:1, 0], dat[0:1, 1], dat[0:1, 2], fmt[idx],
                              linewidth=1, **kwargs_list[idx])[0] for idx,dat in enumerate(x)]
@@ -356,11 +357,12 @@ def _draw(x, legend=None, title=None, labels=False,
             tail_duration = int(frame_rate*tail_duration)
 
         # get line animation
-        if style in ['parallel', True]:
+        if style in ['parallel', True] and trail is not None:
             line_ani = animation.FuncAnimation(fig, update_lines_parallel, x[0].shape[0],
                             fargs=(x, lines, trail, 1, tail_duration, rotations, zoom, chemtrails, elev),
                             interval=1000/frame_rate, blit=False, repeat=False)
-        elif style == 'spin':
+        # Animate spinning
+        else:
             line_ani = animation.FuncAnimation(fig, update_lines_spin, frame_rate*duration,
                             fargs=(x, lines, 1, rotations, zoom, elev),
                             interval=1000/frame_rate, blit=False, repeat=False)
